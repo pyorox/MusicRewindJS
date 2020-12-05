@@ -6,33 +6,45 @@ class Entry {
     }
 }
 
-//
+//processes the JSON file and generates the top artists/songs table
 function rewind() {
+    //read options from the html file
     var year = parseInt(document.getElementById("year").value);
     var lines = parseInt(document.getElementById("lines").value);
     var showTotals = document.getElementById("showTotals").checked;
     
+    //get the JSON history file
     var file = document.getElementById('file').files[0];
     
+    //read and process the JSON file
     var reader = new FileReader();
     reader.onload = (function(theFile) {
         return function(e) {
 
+            //parse JSON file into an object
             var jsonArray = JSON.parse(e.target.result);
 
+            //initialize arrays
             var artists = new Array();
             var songs = new Array();
+            //this ended up not being used but I'm leaving it in if I decide to add it in the future
             //var totalPlays = 0;
 
+            //iterate through all history entries
             for(i=0; i<jsonArray.length; i++) {
                 var jsonObject = jsonArray[i];
+                //process only YouTube Music entries from the selected year that actually correspond to listened music (technically watched videos)
                 if(jsonObject.header === "YouTube Music" && jsonObject.time.startsWith(year + "-") && jsonObject.title.startsWith("Watched ")) {
                     try {
+                        //get song and artist name, getting rid of unnecessary garbage
                         var songName = jsonObject.title.replace("Watched ", "");
                         var artistName = jsonObject.subtitles[0].name.replace(" - Topic", "");
 
+                        //ignore entries where subtitles.name is "Music Library Uploads" (i.e., songs uploaded by the user)
+						//in these cases we just can't get the artist's name, but song name should be fine
                         if(artistName !== "Music Library Uploads") {
                             var pos = -1;
+                            //add artist to list or increment count if it's already in it
                             for(j=0; j<artists.length; j++) {
                                 if(artists[j].name === artistName) {
                                     pos = j;
@@ -49,6 +61,7 @@ function rewind() {
                         }
 
                         var pos = -1;
+                        //add song to list or increment count if it's already in it
                         for(j=0; j<songs.length; j++) {
                             if(songs[j].name === songName) {
                                 pos = j;
@@ -65,15 +78,16 @@ function rewind() {
                         //totalPlays++;
                     }
                     catch(err) {
-                        //quietly skip it
+                        //JSON entry doesn't have song or artist name so we'll just quietly skip it
                     }
                 }
             }
 
-            //after for loop
+            //sort lists in decreasing order
             artists.sort((a,b) => (a.count < b.count) ? 1 : ((b.count < a.count) ? -1 : 0));
             songs.sort((a,b) => (a.count < b.count) ? 1 : ((b.count < a.count) ? -1 : 0));
 
+            //generate table headers
             var tableCode = "<table class=\"tg\" id=\"results\">\n<thead>\n<tr>\n";
             tableCode += "<th class=\"tg-def\">TOP ARTISTS";
             if(showTotals) {
@@ -86,6 +100,9 @@ function rewind() {
             }
             tableCode += "</th>\n</tr>\n</thead>\n<tbody>";
 
+            //generate table body (i.e. the actual top songs/artists)
+            //if the user-selected number of lines exceeds the number of artists or songs we have, we'll only iterate until we run out of both artists and songs
+            //if we run out of one but not the other in the loop below, we'll just print what we can and leave the other one blank
             var maxLines = Math.max(Math.min(artists.length,lines),Math.min(songs.length,lines));
             for(i=0; i<maxLines; i++) {
                 var num = "" + (i+1);
@@ -98,7 +115,7 @@ function rewind() {
                     artistName = artists[i].name;
                 }
                 catch(err) {
-                    //do nothing
+                    //ran out of artists so we'll leave this entry blank
                 }
 
                 var songName = "&nbsp;";
@@ -106,7 +123,7 @@ function rewind() {
                     songName = songs[i].name;
                 }
                 catch(err) {
-                    //do nothing
+                    //ran out of songs so we'll leave this entry blank
                 }
 
                 tableCode += "<tr>\n";
@@ -129,13 +146,14 @@ function rewind() {
 				tableCode += "</tr>\n";
             }
 
-            //footer
+            //add a nice little footer
             tableCode += "<tr>\n"
 				+ "<td class=\"tg-footer-left\">pyoro.me/MusicRewind</td>\n"
 				+ "<td class=\"tg-footer-right\">&#35;YTMusicRewind</td>\n"
 				+ "</tr>\n";
             tableCode += "</tbody>\n</table>";
 
+            //finally, write code to table and make it visible
             document.getElementById("results").outerHTML = tableCode;
             document.getElementById("results_paragraph").style.display = "block";
 
