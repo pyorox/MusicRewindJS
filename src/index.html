@@ -1,0 +1,91 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>#YTMusicRewind</title>
+        <style type="text/css">
+            body {background-color:#eee;}
+            input {font-family:Segoe UI, Helvetica, Arial, sans-serif;font-size:14px;font-weight:500;}
+            a {color: darkred;}
+            .tg {border-collapse:collapse;border-spacing:0;background-color:#212121;color:white;}
+            .tg td{border-style:hidden;font-family:Segoe UI, Helvetica, Arial, sans-serif;font-size:14px;font-weight:bold;overflow:hidden;padding:5px 50px;word-break:normal;}
+            .tg th{border-style:hidden;font-family:Segoe UI, Helvetica, Arial, sans-serif;font-size:14px;font-weight:bold;overflow:hidden;padding:5px 50px;word-break:normal;}
+            .tg .tg-def{text-align:left;vertical-align:top}
+            .tg-footer-left{color:black;background-color:red;text-align:left;vertical-align:top;}
+            .tg-footer-right{color:black;background-color:red;text-align:right;vertical-align:top;}
+            .tg-footer-center{color:black;background-color:red;text-align:center;vertical-align:top;}
+            .red{color:red;}
+            .gray{color:gray; font-size:10px;}
+            .white{color:white;}
+            .footnote{font-family:Segoe UI, Helvetica, Arial, sans-serif; font-size:10px; font-weight: 400;}
+            .instructions{width: 600px;}
+            .right{text-align:right;}
+        </style>
+        <script src="musicrewind.js"></script>
+    </head>
+    <body onload="setYear()">
+        <div width="100%" align="center">
+            <p>
+            <table class="tg instructions">
+                <thead>
+                    <tr>
+                        <td><a href="#" onclick="toggleInstructions()" class="white">INSTRUCTIONS</a></td>
+                    </tr>
+                </thead>
+                <tbody id="instructions_body">
+                    <tr>
+                        <td>
+                            <p>Before using this tool, you will need to export your YouTube Music history through Google Takeout in JSON format. Carefully follow the instructions below to make sure everything goes smoothly.</p>
+                            <p><span class="red">01</span> Go to <a href="https://takeout.google.com/settings/takeout" target="_blank" class="red">Google Takeout</a>.</p>
+                            <p><span class="red">02</span> Make sure the right account is selected on the top right corner. You'll want to pick the specific account you use with YouTube Music, which may be a brand account instead of your main Google account.</p>
+                            <p><span class="red">03</span> Under "create a new export", hit "deselect all".</p>
+                            <p><span class="red">04</span> Scroll down until you find "YouTube and YouTube Music". Select this item by clicking the checkbox.</p>
+                            <p><span class="red">05</span> Click "Multiple formats", change the history format to JSON and click OK.</p>
+                            <p><span class="red">06</span> Click "All YouTube data included" and click "deselect all". Then, select only "history" and click OK.</p>
+                            <p><span class="red">07</span> Proceed to the next step and finalize your data export request.</p>
+                            <p><span class="red">08</span> Eventually you'll get an email from Google with a link to download a ZIP file. Download it.</p>
+                            <p><span class="red">09</span> Within the ZIP file there will be a "history" folder with a file in it called "watch-history.json". Extract that file somewhere. This is the file you'll need to provide below.</p>
+                            <p><span class="red">10</span> You're good to go! You can now hide these instructions and proceed to the form below.</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tg-footer-center">
+                            <input type="button" value="Hide instructions" onclick="toggleInstructions()">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </p>
+
+            <table class="tg">
+                <tbody>
+                <tr>
+                    <td class="tg-def">Year:</td>
+                    <td class="tg-def"><input type="number" id="year" value=""></td>
+                </tr>
+                <tr>
+                    <td class="tg-def">Lines:</td>
+                    <td class="tg-def"><input type="number" id="lines" value="10"></td>
+                </tr>
+                <tr>
+                    <td class="tg-def" colspan="2"><input type="checkbox" id="showTotals" name="show_totals">
+                        <label for="show_totals">Show totals</label></td>
+                </tr>
+                <tr>
+                    <td class="tg-def" colspan="2"><label for="file">JSON history file:</label>
+                        <input type="file" id="file" name="file"></td>
+                </tr>
+                <tr>
+                    <td class="tg-footer-center" colspan="2"><input type="button" value="Rewind!" onclick="rewind()"></td>
+                </tr>
+                </tbody>
+            </table>
+            <p id="results_paragraph" style="display:none;">
+                <table id="results"></table>
+            </p>
+            <p class="footnote">
+                All processing is done locally on your machine. No data is sent to any remote server.<br>
+                <a href="https://github.com/pyorox/MusicRewindJS" target="_blank">View source code</a> | <a href="https://ko-fi.com/pyoro" target="_blank">Buy me a coffee</a>
+            </p>
+        </div>
+    </body>
+</html>
